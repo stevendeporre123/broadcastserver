@@ -29,8 +29,6 @@ async def main():
 
     async with websockets.serve(
         handler,
-        host="localhost",
-        port=443,
         process_request=health_check,
     ):
         await stop
