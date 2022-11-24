@@ -27,8 +27,14 @@ async def main():
     stop = loop.create_future()
     loop.add_signal_handler(signal.SIGTERM, stop.set_result, None)
 
-    async with websockets.serve(handler, host="", port=443, process_request=health_check):
+    async with websockets.serve(
+        handler,
+        host="localhost",
+        port=443,
+        process_request=health_check,
+    ):
         await stop
+
 
 if __name__ == "__main__":
     asyncio.run(main())
