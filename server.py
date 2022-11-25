@@ -1,24 +1,20 @@
+#!/usr/bin/env python
+
 import asyncio
 import http
 import signal
+
 import websockets
 
-connected = set()
 
-async def handler(websocket):
-    connected.add(websocket)
-    print(websocket)
+async def echo(websocket):
     async for message in websocket:
-      try:
-        print(message)
-        websockets.broadcast(connected, message)
-      finally:
-        pass 
+        await websocket.send(message)
+
 
 async def health_check(path, request_headers):
     if path == "/healthz":
         return http.HTTPStatus.OK, [], b"OK\n"
-
 
 
 async def main():
@@ -28,9 +24,9 @@ async def main():
     loop.add_signal_handler(signal.SIGTERM, stop.set_result, None)
 
     async with websockets.serve(
-        handler,
+        echo,
         host="",
-        port=5870,
+        port=8080,
         process_request=health_check,
     ):
         await stop
